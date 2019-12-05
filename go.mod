@@ -6,7 +6,7 @@ require (
 	github.com/evanphx/json-patch v4.5.0+incompatible
 	github.com/googleapis/gnostic v0.3.1 // indirect
 	github.com/gosimple/slug v1.7.0
-	github.com/jaypipes/ghw v0.0.0-20191127163616-59d4527537a4
+	github.com/jaypipes/ghw v0.5.0
 	github.com/rainycape/unidecode v0.0.0-20150907023854-cb7f23ec59be // indirect
 	go.uber.org/atomic v1.4.0 // indirect
 	go.uber.org/multierr v1.1.0 // indirect
