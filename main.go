@@ -49,14 +49,19 @@ func main() {
 	}
 
 	for {
-		dmi, err := ghw.DMI()
+		chassis, err := ghw.Chassis()
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+
+		product, err := ghw.Product()
 		if err != nil {
 			log.Fatal(err.Error())
 		}
 
 		labels := map[string]string{
-			"node.vexxhost.com/vendor":  slug.Make(dmi.System.Vendor),
-			"node.vexxhost.com/product": slug.Make(dmi.Product.Name),
+			"node.vexxhost.com/vendor":  slug.Make(chassis.Vendor),
+			"node.vexxhost.com/product": slug.Make(product.Name),
 		}
 
 		node, err := clientset.CoreV1().Nodes().Get(nodeName, metav1.GetOptions{})

@@ -6,7 +6,7 @@ require (
 	github.com/evanphx/json-patch v4.5.0+incompatible
 	github.com/googleapis/gnostic v0.3.1 // indirect
 	github.com/gosimple/slug v1.7.0
-	github.com/jaypipes/ghw v0.0.0-20190910201054-e7ed03319b04
+	github.com/jaypipes/ghw v0.0.0-20191127163616-59d4527537a4
 	github.com/rainycape/unidecode v0.0.0-20150907023854-cb7f23ec59be // indirect
 	go.uber.org/atomic v1.4.0 // indirect
 	go.uber.org/multierr v1.1.0 // indirect
@@ -18,8 +18,3 @@ require (
 	k8s.io/client-go v0.0.0-20190620085101-78d2af792bab
 	k8s.io/utils v0.0.0-20190907131718-3d4f5b7dea0b // indirect
 )
-
-// NOTE(mnaser): We currently use a fork of ghw because our changes
-//              have not merged yet.  This is a hack and should be
-//              removed when jaypipes/ghw#140 merges.
-replace github.com/jaypipes/ghw => github.com/vexxhost/ghw v0.0.0-20190910201054-e7ed03319b04
