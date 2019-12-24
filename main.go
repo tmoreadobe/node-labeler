@@ -8,6 +8,7 @@ import (
 	jsonpatch "github.com/evanphx/json-patch"
 	"github.com/gosimple/slug"
 	"github.com/jaypipes/ghw"
+	"github.com/prometheus/common/log"
 	"go.uber.org/zap"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -16,16 +17,13 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-var log *zap.Logger
-
 func main() {
 	// NOTE(mnaser): Due to the fact that we don't want to run ghw in
 	//               a privileged context, we simply disable all warnings.
 	os.Setenv("GHW_DISABLE_WARNINGS", "1")
 
 	logger, _ := zap.NewProduction()
-	defer logger.Sync()
-	log = logger.Named("node-labeler")
+	log := logger.Named("node-labeler")
 
 	nodeName, ok := os.LookupEnv("NODE")
 	if !ok {
@@ -70,12 +68,14 @@ func main() {
 		}
 
 		for label, value := range labels {
-			addLabelToNode(clientset, node, label, value)
+			err = addLabelToNode(clientset, node, label, value)
+			if err != nil {
+				log.Fatal(err.Error())
+			}
 		}
 
 		time.Sleep(600 * time.Second)
 	}
-
 }
 
 func addLabelToNode(clientset *kubernetes.Clientset, node *v1.Node, key string, value string) error {
@@ -85,19 +85,19 @@ func addLabelToNode(clientset *kubernetes.Clientset, node *v1.Node, key string, 
 
 	originalNode, err := json.Marshal(node)
 	if err != nil {
-		log.Fatal(err.Error())
+		return err
 	}
 
 	node.ObjectMeta.Labels[key] = value
 
 	newNode, err := json.Marshal(node)
 	if err != nil {
-		log.Fatal(err.Error())
+		return err
 	}
 
 	patch, err := jsonpatch.CreateMergePatch(originalNode, newNode)
 	if err != nil {
-		log.Fatal(err.Error())
+		return err
 	}
 
 	log.Info("Patching Node resource",
@@ -107,8 +107,8 @@ func addLabelToNode(clientset *kubernetes.Clientset, node *v1.Node, key string, 
 
 	_, err = clientset.CoreV1().Nodes().Patch(node.Name, types.MergePatchType, patch)
 	if err != nil {
-		log.Error(err.Error())
+		return err
 	}
 
-	return err
+	return nil
 }
